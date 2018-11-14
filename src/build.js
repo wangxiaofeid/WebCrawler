@@ -53,6 +53,9 @@ export default class Build {
     };
   }
 
+  /**
+   * 文件下载
+   */ 
   async downloadFile(url) {
     console.log(url);
     try {
