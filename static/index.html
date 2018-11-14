@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>网站爬取</title>
+  <style>
+    html, body{
+      margin: 0;
+      padding: 0;
+    }
+    .item{
+      margin: 15px 0 0 0;
+    }
+    .item label{
+      width: 150px;
+      text-align: right;
+      display: inline-block;
+    }
+    .item label i{
+      font-style: normal;
+      color: red;
+    }
+    .item input{
+      width: 250px;
+      padding: 8px 10px;
+      border: 1px solid #999;
+    }
+    .item Button{
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="item">
+    <label>入口URL <i>*</i></label>
+    <input type="text" id="entry">
+  </div>
+  <div class="item">
+    <label>匹配URL</label>
+    <input type="text" id="rule">
+  </div>
+  <div class="item">
+      <label>输出路径</label>
+      <input type="text" id="pathName">
+    </div>
+  <div class="item">
+    <label>请求头</label>
+    <input type="text" id="header">
+  </div>
+  <div class="item">
+    <label></label>
+    <Button id="send">发送请求</Button>
+  </div>
+  <div class="item">
+      <label></label>
+      <span id="message"></span>
+    </div>
+  <script src="/axios.min.js"></script>
+  <script>
+    window.onload = function() {
+      var entry = document.getElementById('entry'),
+          rule = document.getElementById('rule'),
+          outputPath = document.getElementById('pathName'),
+          header = document.getElementById('header'),
+          send = document.getElementById('send'),
+          message = document.getElementById('message');
+      var isLoading = false;
+      
+      send.onclick = function () {
+        if (isLoading) {
+          return 
+        }
+        var entryValue = entry.value,
+            ruleValue = rule.value,
+            outputPathValue = outputPath.value,
+            headerValue = header.value;
+
+        if (!entryValue) {
+          alert('请输入入口URL');
+        }
+        isLoading = true;
+        send.innerText = '爬取中';
+        message.innerText = '';
+        axios.post('/api/build', {
+          entry: entryValue,
+          rule: ruleValue,
+          pathName: outputPathValue,
+          header: headerValue,
+        })
+        .then(function (result) {
+          console.log(result);
+          if (result.status == 200 && result.data.code) {
+            alert('爬取成功');
+            message.innerText = '请到文件夹 ' + result.data.data + ' 下查看';
+          } else {
+            alert('爬取失败');
+          }
+          send.innerText = '发送请求';
+          isLoading = false;
+        })
+        .catch(function (error) {
+          alert('爬取失败');
+          send.innerText = '发送请求';
+          isLoading = false;
+        });
+      }
+    }
+  </script>
+</body>
+</html>
